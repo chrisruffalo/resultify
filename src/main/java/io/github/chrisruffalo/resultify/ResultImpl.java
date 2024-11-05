@@ -15,12 +15,29 @@ class ResultImpl<OUTPUT> implements Result<OUTPUT> {
     private final Exception currentError;
     private final boolean errorPresent;
 
-    public ResultImpl(OUTPUT output, Exception error) {
-        this.currentOutput = output;
-        this.currentError = error;
-        this.outputPresent = Optional.ofNullable(output).isPresent();
+    /**
+     * 
+     *
+     * @param output
+     * @param error
+     */
+    ResultImpl(OUTPUT output, Exception error) {
         // an error cannot be present if there is already a value
-        this.errorPresent = !outputPresent && Optional.ofNullable(error).isPresent();
+        this.errorPresent = Optional.ofNullable(error).isPresent();
+        if (this.errorPresent) {
+            this.currentError = error;
+            this.currentOutput = null;
+            this.outputPresent = false;
+        } else {
+            this.outputPresent = Optional.ofNullable(output).isPresent();
+            this.currentError = null;
+            if (this.outputPresent) {
+                this.currentOutput = output;
+            } else {
+                this.currentOutput = null;
+            }
+        }
+
     }
 
     @Override

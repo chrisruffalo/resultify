@@ -30,7 +30,7 @@ is provided. The final `get()` call will retrieve the value from the
 ## Why Not Use...
 Yes, there are other patterns for this. There are better libraries in Java for this. I wrote this
 because I wanted something that worked the way I thought and that way has been very heavily influenced
-by Mutiny, Go, and Java's own Optional. If you like this and the way I think then go with it. Otherwise
+by Mutiny, Go, Rust, and Java's own Optional. If you like this and the way I think then go with it. Otherwise
 there are other libraries that may fit your mental model better. Ultimately, as discussed further in
 this README, the most important thing is that whatever you choose reduces the cognitive overhead
 for you (and your team).
