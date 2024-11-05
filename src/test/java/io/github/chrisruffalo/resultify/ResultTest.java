@@ -100,6 +100,35 @@ class ResultTest {
     }
 
     @Test
+    void recoverBeforeCondition() {
+        final AtomicInteger min = new AtomicInteger(0);
+        final int value = Result.of("unparsable")
+                .map(Integer::parseInt)
+                .recover(result -> {
+                    min.set(min.get() + 1);
+                    if (min.get() > 5) {
+                        return 22;
+                    }
+                    throw new Exception();
+                }, Condition.atMost(10))
+                .get();
+
+        Assertions.assertEquals(22, value);
+    }
+
+    @Test
+    void recoverWithCondition() {
+        final Exception e = Result.of("unparsable")
+                .map(Integer::parseInt)
+                .recover(result -> {
+                    throw new Exception();
+                }, Condition.atMost(10))
+                .error();
+
+        Assertions.assertNotNull(e);
+    }
+
+    @Test
     void noRecovery() {
         final String value = Result.from(() -> "norecovery").recover(exception -> "recovery").get();
         Assertions.assertEquals("norecovery", value);
@@ -209,8 +238,8 @@ class ResultTest {
     }
 
     @Test
-    void list() {
-        Result<String> result = Result.list(
+    void first() {
+        Result<String> result = Result.first(
             () -> { throw new RuntimeException(); },
             () -> { throw new Exception(); },
             () -> "hello world",
@@ -222,8 +251,8 @@ class ResultTest {
     }
 
     @Test
-    void listNoResult() {
-        Result<String> result = Result.list(
+    void firstNoResult() {
+        Result<String> result = Result.first(
             () -> { throw new RuntimeException(); },
             () -> { throw new Exception(); }
         );

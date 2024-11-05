@@ -78,7 +78,7 @@ public interface Result<OUTPUT> {
      * Transform an error into a result (with output).
      *
      * @param with function to use for recovering
-     * @return result with recovered output
+     * @return result with recovered output (or error if no recovery possible)
      */
     default Result<OUTPUT> recover(ThrowingFunction<Exception, OUTPUT> with) {
         if (!this.isError()) {
@@ -89,6 +89,24 @@ public interface Result<OUTPUT> {
         } catch (Exception ex) {
             return Result.of(ex);
         }
+    }
+
+    /**
+     * Recover until either the recovery produces no error or until some condition is met. If
+     * there is no error during recovery then recovery ends. If there is an error the recovery
+     * `with` function will be executed until the condition is met (or recovery is successful).
+     *
+     * @param with function to recover from failure (error) with
+     * @param until some condition is met
+     * @return result with recovered output (or error if no recovery possible)
+     */
+    default Result<OUTPUT> recover(ThrowingFunction<Exception, OUTPUT> with, Condition<OUTPUT> until) {
+        Result<OUTPUT> result;
+        do {
+            result = this.recover(with);
+        } while(result.isError() && !until.met(result));
+
+        return result;
     }
 
     /**
@@ -269,7 +287,7 @@ public interface Result<OUTPUT> {
      * @param <RESULT> value type
      */
     @SafeVarargs
-    static <RESULT> Result<RESULT> list(Callable<RESULT>... functions) {
+    static <RESULT> Result<RESULT> first(Callable<RESULT>... functions) {
         return Arrays.stream(functions)
                 .map(Result::from)
                 .filter(Result::isPresent)
