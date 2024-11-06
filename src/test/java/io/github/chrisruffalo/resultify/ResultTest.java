@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,12 +21,12 @@ class ResultTest {
         Assertions.assertFalse(result.isEmpty());
         Assertions.assertFalse(result.isError());
 
-        result = Result.of((String)null);
+        result = Result.of(null);
         Assertions.assertTrue(result.isEmpty());
         Assertions.assertFalse(result.isPresent());
         Assertions.assertFalse(result.isError());
 
-        result = Result.of(new RuntimeException());
+        result = Result.of(null, new RuntimeException());
         Assertions.assertTrue(result.isEmpty());
         Assertions.assertFalse(result.isPresent());
         Assertions.assertTrue(result.isError());
@@ -88,6 +90,19 @@ class ResultTest {
         Assertions.assertTrue(runtime.isEmpty());
         Assertions.assertNull(runtime.get());
         Assertions.assertInstanceOf(RuntimeException.class, runtime.error());
+    }
+
+    @Test
+    void panicOrGet() {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+           final Result<String> result = Result.of(null, new NoSuchFileException("test exception"));
+           result.panicOrGet();
+        });
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            final Result<String> result = Result.of(null, new RuntimeException("test exception"));
+            result.panicOrGet();
+        });
+        Assertions.assertEquals("value", Result.of("value").panicOrGet());
     }
 
     @Test
@@ -178,6 +193,11 @@ class ResultTest {
     }
 
     @Test
+    void getOrFailsafe() {
+        Assertions.assertEquals("value", Result.of(null).getOrFailsafe("value"));
+    }
+
+    @Test
     void errorInRecovery() {
         AtomicInteger sideValue = new AtomicInteger(0);
         final Integer value = Result.from(() -> "unparsable")
@@ -245,6 +265,19 @@ class ResultTest {
             () -> "hello world",
             () -> "goodbye!"
         );
+
+        Assertions.assertTrue(result.isPresent());
+        Assertions.assertEquals("hello world", result.get());
+    }
+
+    @Test
+    void firstCollection() {
+        Result<String> result = Result.first(List.of(
+            () -> { throw new RuntimeException(); },
+            () -> { throw new Exception(); },
+            () -> "hello world",
+            () -> "goodbye!"
+        ));
 
         Assertions.assertTrue(result.isPresent());
         Assertions.assertEquals("hello world", result.get());

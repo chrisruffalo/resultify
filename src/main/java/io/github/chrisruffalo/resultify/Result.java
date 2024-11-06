@@ -1,9 +1,11 @@
 package io.github.chrisruffalo.resultify;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * A monad representing either an output type that should
@@ -21,6 +23,36 @@ public interface Result<OUTPUT> {
      * @return output of the original called function
      */
     OUTPUT get();
+
+    /**
+     * Throws an exception if there is an error/exception in the result. Gets
+     * the output value otherwise.
+     *
+     * @return the output value if no error is present, throws a runtime exception if an error is present
+     * @throws RuntimeException exception if an error is present. if the present error is not already a runtime exception it will be wrapped
+     */
+    default OUTPUT panicOrGet() {
+        if (isError()) {
+            final Exception ex = error();
+            if (ex instanceof RuntimeException) {
+                throw (RuntimeException)ex;
+            } else {
+                throw new RuntimeException(ex);
+            }
+        }
+        return get();
+    }
+
+    /**
+     * A shortcut for {code}Result.failsafe(value).get(){/code}. The
+     * failsafe value is only set if no value is present.
+     *
+     * @param failsafeValue to set
+     * @return the value contained in the result or the failsafe value if not present
+     */
+    default OUTPUT getOrFailsafe(OUTPUT failsafeValue) {
+        return failsafe(failsafeValue).get();
+    }
 
     /**
      * Get the error that was encountered during the called function.
@@ -85,9 +117,9 @@ public interface Result<OUTPUT> {
             return this;
         }
         try {
-            return Result.of(with.apply(this.error()));
+            return Result.of(with.apply(this.error()), null);
         } catch (Exception ex) {
-            return Result.of(ex);
+            return Result.of(null, ex);
         }
     }
 
@@ -149,7 +181,7 @@ public interface Result<OUTPUT> {
      */
     default Result<OUTPUT> failsafe(OUTPUT value) {
         if (isEmpty()) {
-            return Result.of(value);
+            return Result.of(value, null);
         }
         return this;
     }
@@ -226,31 +258,7 @@ public interface Result<OUTPUT> {
     }
 
     /**
-     * Create a result from a value. This is good for
-     * further mapping or transformation.
-     *
-     * @param result to use as the populated value
-     * @return a result monad that contains the given value
-     * @param <RESULT> value type
-     */
-    static <RESULT> Result<RESULT> of(RESULT result) {
-        return Result.of(result, null);
-    }
-
-    /**
-     * Create a result from a given exception (error). The
-     * result will have no value but will have an exception.
-     *
-     * @param exception to use to create the result
-     * @return result monad with the given error
-     * @param <RESULT> value type
-     */
-    static <RESULT> Result<RESULT> of(Exception exception) {
-        return Result.of(null, exception);
-    }
-
-    /**
-     * Create a result from two values and use the result logic
+     * Create a result from a value and exception and use the result logic
      * to determine if the result value is present or if the
      * error is present.
      *
@@ -260,9 +268,17 @@ public interface Result<OUTPUT> {
      * @param <RESULT> value type
      */
     static <RESULT> Result<RESULT> of(RESULT result, Exception ex) {
-        if (Optional.ofNullable(ex).isPresent()) {
-            return new ResultImpl<>(null, ex);
-        }
+        return new ResultImpl<>(result, ex);
+    }
+
+    /**
+     * A shortcut for {code}Result.of(value, null){/code}.
+     *
+     * @param result value to use as the result
+     * @return a result monad with the result value
+     * @param <RESULT> value type
+     */
+    static <RESULT> Result<RESULT> of(RESULT result) {
         return new ResultImpl<>(result, null);
     }
 
@@ -277,7 +293,7 @@ public interface Result<OUTPUT> {
     }
 
     /**
-     * Given a list of methods to call return the first one that produces
+     * Given an array of callable methods to call return the first one that produces
      * an output. The methods/functions/callables will be called in order.
      * This method, however, cannot return a result with an error and so
      * any errors that are not logged are lost.
@@ -288,11 +304,34 @@ public interface Result<OUTPUT> {
      */
     @SafeVarargs
     static <RESULT> Result<RESULT> first(Callable<RESULT>... functions) {
-        return Arrays.stream(functions)
-                .map(Result::from)
-                .filter(Result::isPresent)
-                .findFirst()
-                .orElse(Result.empty());
+        return first(Arrays.stream(functions).map(Result::from));
     }
+
+    /**
+     * Given a collection of callable methods to call return the first one that produces
+     * an output. The methods/functions/callables will be called in order.
+     * This method, however, cannot return a result with an error and so
+     * any errors that are not logged are lost.
+     *
+     * @param functions to call, in order
+     * @return the first result with no error, or an empty result
+     * @param <RESULT> value type
+     */
+    static <RESULT> Result<RESULT> first(Collection<Callable<RESULT>> functions) {
+        return first(functions.stream().map(Result::from));
+    }
+
+    /**
+     * Shared code to convert a list of wrapped results into a single
+     * result by finding the first present value.
+     *
+     * @param resultStream stream of wrapped results
+     * @return the first present result in the stream
+     * @param <RESULT> value type
+     */
+    private static <RESULT> Result<RESULT> first(Stream<Result<RESULT>> resultStream) {
+        return resultStream.filter(Result::isPresent).findFirst().orElse(Result.empty());
+    }
+
 
 }
