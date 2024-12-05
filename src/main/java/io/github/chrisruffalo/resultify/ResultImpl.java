@@ -16,10 +16,14 @@ class ResultImpl<OUTPUT> implements Result<OUTPUT> {
     private final boolean errorPresent;
 
     /**
-     * 
+     * Implements the result constructor by starting with
+     * a concrete and final instance of the output value
+     * and the exception. This constructor will
+     * automatically only store the appropriate value and
+     * not both.
      *
-     * @param output
-     * @param error
+     * @param output value to store if no error is present
+     * @param error to store if it is present
      */
     ResultImpl(OUTPUT output, Exception error) {
         // an error cannot be present if there is already a value
