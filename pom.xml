@@ -4,12 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.chrisruffalo</groupId>
     <artifactId>resultify</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>jar</packaging>
 
     <name>resultify</name>
 
     <properties>
+        <revision>1.0-SNAPSHOT</revision>
+
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
