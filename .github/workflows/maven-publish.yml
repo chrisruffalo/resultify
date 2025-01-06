@@ -26,10 +26,10 @@ jobs:
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Build with Maven
-      run: mvn -B package -Drevision=$GITHUB_REF --file pom.xml
+      run: mvn -B package -Drevision=${{ github.event.release.tag_name }} --file pom.xml
 
     - name: Publish to GitHub Packages Apache Maven
-      run: mvn -Drevision=$GITHUB_REF --batch-mode deploy
+      run: mvn -Drevision=${{ github.event.release.tag_name }} --batch-mode deploy
       env:
         MAVEN_USERNAME: ${{ secrets.OSS_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSS_TOKEN }}
