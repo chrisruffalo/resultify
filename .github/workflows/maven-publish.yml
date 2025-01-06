@@ -32,5 +32,5 @@ jobs:
       run: mvn -Drevision=${{ github.event.release.tag_name }} --batch-mode deploy
       env:
         MAVEN_USERNAME: ${{ secrets.OSS_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.OSS_TOKEN }}
+        MAVEN_PASSWORD: ${{ secrets.OSS_PASSWORD }}
 
