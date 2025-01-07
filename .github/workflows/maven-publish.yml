@@ -49,5 +49,7 @@ jobs:
         MAVEN_USERNAME: ${{ secrets.OSS_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSS_PASSWORD }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        RESOLVER_GPG_KEY_PASS: ${{ secrets.GPG_PASSPHRASE }}
         MAVEN_GPG_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        RESOLVER_GPG_KEY: ${{ secrets.GPG_PASSPHRASE }}
         MAVEN_GPG_KEY_FINGERPRINT: ${{ secrets.GPG_KEY_FINGERPRINT }}
