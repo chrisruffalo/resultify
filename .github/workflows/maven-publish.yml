@@ -24,7 +24,9 @@ jobs:
         distribution: 'temurin'
         server-id: ossrh
         server-username: MAVEN_USERNAME
-        server-password: MAVEN_PASSWORD        
+        server-password: MAVEN_PASSWORD
+        gpg-private-key: GPG_PRIVATE_KEY
+        gpg-passphrase: GPG_PASSPHRASE
 
     - name: Build with Maven
       run: mvn -B package -Drevision=${{ github.event.release.tag_name }} --file pom.xml
@@ -34,4 +36,6 @@ jobs:
       env:
         MAVEN_USERNAME: ${{ secrets.OSS_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSS_PASSWORD }}
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
