@@ -67,7 +67,7 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                        <phase>package</phase>
+                        <phase>verify</phase>
                         <configuration>
                             <gpgArguments>
                                 <arg>--pinentry-mode</arg>
