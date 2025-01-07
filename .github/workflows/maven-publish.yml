@@ -28,7 +28,7 @@ jobs:
         server-password: MAVEN_PASSWORD
 
     - name: Cache local Maven repository
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -41,7 +41,7 @@ jobs:
         gpg --list-secret-keys --keyid-format LONG
 
     - name: Build with Maven
-      run: mvn -B package -Drevision=${{ github.event.release.tag_name }} install
+      run: mvn -B package -X -Drevision=${{ github.event.release.tag_name }} install
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn -Drevision=${{ github.event.release.tag_name }} --batch-mode verify deploy
@@ -50,3 +50,4 @@ jobs:
         MAVEN_PASSWORD: ${{ secrets.OSS_PASSWORD }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         MAVEN_GPG_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        MAVEN_GPG_KEY_FINGERPRINT: ${{ secrets.GPG_KEY_FINGERPRINT }}
