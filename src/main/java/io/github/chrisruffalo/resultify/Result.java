@@ -61,6 +61,11 @@ public interface Result<OUTPUT> {
      */
     Exception error();
 
+    /**
+     * Converts the result to an optional allowing use of optional propcessing/lambdas.
+     *
+     * @return the output object represented as an optional
+     */
     default Optional<OUTPUT> asOptional() {
         return Optional.ofNullable(get());
     }

@@ -11,11 +11,17 @@ import java.time.temporal.ChronoUnit;
  * be checked so `indefinitely` just means "never stop trying
  * until you get a non-error result".
  *
- * @param <OUTPUT>
+ * @param <OUTPUT> value type of the result
  */
 @FunctionalInterface
 public interface Condition<OUTPUT> {
 
+    /**
+     * Returns true when the condition is met, false otherwise
+     *
+     * @param currentResult to check against the condition
+     * @return true if met, false otherwise
+     */
     boolean met(Result<OUTPUT> currentResult);
 
     /**

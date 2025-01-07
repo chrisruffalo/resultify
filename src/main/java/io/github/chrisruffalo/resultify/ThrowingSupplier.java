@@ -24,6 +24,12 @@ public interface ThrowingSupplier<T> extends Supplier<T> {
         }
     }
 
+    /**
+     * The value to get when the thrown function might occur
+     *
+     * @return value to get
+     * @throws Exception when a throwable exception happens
+     */
     T getThrows() throws Exception;
 
 }

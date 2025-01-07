@@ -24,6 +24,12 @@ public interface ThrowingConsumer<T> extends Consumer<T> {
         }
     }
 
+    /**
+     * Implement to accept a thrown exception
+     *
+     * @param t to throw
+     * @throws Exception when a throwable throws
+     */
     void acceptThrows(T t) throws Exception;
 
 }

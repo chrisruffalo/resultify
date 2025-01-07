@@ -8,16 +8,28 @@
     <packaging>jar</packaging>
 
     <name>resultify</name>
+    <description>a result streamlining library that turns calls that throw exceptions into result-based types</description>
+    <url>https://github.com/chrisruffalo/resultify</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>git@github.com:chrisruffalo/resultify.git</url>
+    </scm>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
-
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <dependencies>
-
         <!-- junit -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -25,7 +37,6 @@
             <version>5.11.0</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <distributionManagement>
@@ -38,5 +49,21 @@
     </distributionManagement>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+                <executions>
+                    <execution>
+                        <id>default-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>

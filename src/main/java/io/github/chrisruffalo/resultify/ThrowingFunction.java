@@ -21,6 +21,13 @@ public interface ThrowingFunction<T, R> extends Function<T, R> {
         }
     }
 
+    /**
+     * Apply a function to a funtion with a throwable element
+     *
+     * @param elem to throw
+     * @return value
+     * @throws Exception when thrown
+     */
     R applyThrows(T elem) throws Exception;
 
 }
