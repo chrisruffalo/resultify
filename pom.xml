@@ -51,7 +51,7 @@
         <repository>
             <id>ossrh</id>
             <name>Central Repository OSSRH</name>
-            <url>https://s01.oss.sonatype.org/</url>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy-by-repository</url>
         </repository>
     </distributionManagement>
 
@@ -111,11 +111,6 @@
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>1.7.0</version>
                 <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
             </plugin>
         </plugins>
     </build>
